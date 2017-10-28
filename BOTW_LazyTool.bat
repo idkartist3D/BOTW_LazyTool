@@ -1,21 +1,20 @@
-@echo off
-title BOTW Lazy Tool
-setlocal ENABLEDELAYEDEXPANSION
+@ECHO OFF
+TITLE BOTW Lazy Tool
+SETLOCAL ENABLEDELAYEDEXPANSION
 REM Take the cmd-line, remove all until the first parameter
-set "params=!cmdcmdline:~0,-1!"
-set "params=!params:*" =!"
-set count=0
+SET "params=!cmdcmdline:~0,-1!"
+SET "params=!params:*" =!"
+SET count=0
 
 REM Split the parameters on spaces but respect the quotes
-for %%G IN (!params!) do (
-  set /a count+=1
-  set "file_!count!=%%~G"
-  rem echo !count! %%~G
+FOR %%G IN (!params!) do (
+  SET /a count+=1
+  SET "file_!count!=%%~G"
 )
 
 REM list the parameters
-echo !file_1!|find ".csv" >nul
-if errorlevel 1 (
+ECHO !file_1!|find ".csv" >nul
+IF errorlevel 1 (
     REM Not the csv file!
 	set csvPath=!file_2!
 	set bfresPath=!file_1!
@@ -25,21 +24,21 @@ if errorlevel 1 (
 	set bfresPath=!file_2!
 )
 REM If no files are given (User probably just opened .bat)
-if "!file_1!"=="" (
+IF "!file_1!"=="" (
 	ECHO Ya need to drag the bfres and csv onto the .bat^^!
 	ECHO Press any key to exit...
 	PAUSE>nul
 	exit
 )
 REM If no second file was given
-if "!file_2!"=="" (
+IF "!file_2!"=="" (
 	ECHO Ya need to drag in both files^^!
 	ECHO Press any key to exit...
 	PAUSE>nul
 	exit
 )
 REM If a third file was given
-if NOT "!file_3!"=="" (
+IF NOT "!file_3!"=="" (
 	ECHO More than two files detected. The universe will now end.
 	ECHO Press any key to become the singularity...
 	PAUSE>nul
@@ -80,7 +79,7 @@ IF NOT EXIST "%~dp0\BOTW-AutoMips.py" (
 	exit
 ) ELSE (
 	REM Waits for user to initialize the Auto-Mips script.
-	ECHO Press any key initialize Auto-Mips, or just close the window to uhh... not
+	ECHO Press any key initialize Auto-Mips
 )
 PAUSE>nul
 ECHO.
@@ -88,11 +87,8 @@ REM Executes the specified script + bfres in the current directory.
 python "%~dp0\BOTW-AutoMips.py" "%bfresPath%"
 ECHO.
 ECHO.
-ECHO All done^^! Hooray for not having to type things^^! ^^^^^-^^^^
-ECHO Press any key to exit...
+ECHO Press any key to Yaz0Enc
 PAUSE>nul
 "%~dp0\yaz0enc.exe" "%bfresPath%"
 ECHO Press any key to exit...
 PAUSE>nul
-
-REM Shitily thrown together by IdkArtist3D
