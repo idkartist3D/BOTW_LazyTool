@@ -18,10 +18,10 @@ IF errorlevel 1 (
     REM Not the csv file!
 	set csvPath=!file_2!
 	set bfresPath=!file_1!
-) else (
+) ELSE (
     REM Is the csv file!
-    set csvPath=!file_1!
-	set bfresPath=!file_2!
+    SET csvPath=!file_1!
+	SET bfresPath=!file_2!
 )
 REM If no files are given (User probably just opened .bat)
 IF "!file_1!"=="" (
