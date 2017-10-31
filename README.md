@@ -14,5 +14,7 @@ Using the tool is as simple as draging and dropping files onto it.
 * Drop in any number of .sbitemico or sbitemico.bfres files to automatically run them through Yaz0Dec or Yaz0Enc and to rename them
 ## Notes
 ~~While the tool automatically renames files, it also deletes any files that occupy that name.~~
+
 Backing up old files is now supported! 
+
 Always back up any importaint files, especially original files, in a safe place.
