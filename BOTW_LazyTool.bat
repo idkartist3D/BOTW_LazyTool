@@ -91,25 +91,40 @@ ECHO.
 REM If no BOTW_AutoMips.py script exists
 IF NOT EXIST "%~dp0\BOTW-AutoMips.py" (
 	ECHO No BOTW-AutoMips.py script found^^!
-	ECHO Make sure it's located in the same directory as this program.
-	ECHO If you don't have it, press any key to go to the download page.
-	PAUSE>nul
-	START "" https://github.com/CEObrainz/Botw-AutoMipping
-	exit
+	ECHO If you'd like to go to the download page, type "uhhok"
+	ECHO Otherwise, either press enter to continue to Yaz0Enc, or just exit.
+	ECHO.
+	SET /P input=
+	IF "!input!"=="" (
+		REM Just continue to Yaz0Enc
+		GOTO justYaz0it
+	)
+	IF "!input!"=="uhhok" (
+		START "" https://github.com/CEObrainz/Botw-AutoMipping
+		exit
+	)
 ) ELSE (
 	REM Waits for user to initialize the Auto-Mips script.
-	ECHO Press any key initialize Auto-Mips
+	ECHO Press enter to initialize Auto-Mips, or type "skip" to go to Yaz0Enc
+	SET /P input=
+	IF "!input!"=="" (
+		REM Just continue to Auto-Mips
+		GOTO autoMips
+	)
+	IF "!input!"=="skip" (
+		GOTO justYaz0it
+	)
 )
 PAUSE>nul
 ECHO.
-
+:autoMips
 REM Executes the specified script + bfres in the current directory.
 "%~dp0\BOTW-AutoMips.py" "%bfresPath%"
 ECHO.
 ECHO.
 ECHO Press any key to run Yaz0Enc
 PAUSE>nul
-
+:justYaz0it
 REM If there's already a file named .sbfres, check for more old copies
 IF EXIST "%~dp0%bfresName%.sbfres" (
 	IF NOT EXIST "%~dp0%bfresName%.sbfres.old" (
