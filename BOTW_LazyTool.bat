@@ -14,6 +14,14 @@ for %%G IN (!params!) do (
 )
 ECHO Filecount is !count!
 
+REM If no files are given (User probably just opened .bat)
+if "!file_1!"=="" (
+	ECHO You must drop files onto the .bat for this program to work!
+	ECHO Press any key to exit...
+	PAUSE>nul
+	exit
+)
+
 REM If there's greater than two files, assume no use of BFRES_Vertex.py, go straight to encoding/decoding
 IF %fileCount% GTR 2 (
 	GOTO encDec
@@ -102,16 +110,34 @@ ECHO.
 ECHO Press any key to run Yaz0Enc
 PAUSE>nul
 
-REM If file already exists with the name it will be written to, delete it
-REM -Possibility for having a system to rename the old file to .old(x) so no files are accidentally lost/deleted
-IF EXIST "%~dp0\%bfresName%.sbfres" DEL "%bfresName%.sbfres"
-
-REM Executes Yaz0Encoder
-"%~dp0\yaz0enc.exe" "%bfresPath%"
-
-REM Renames output file to .sbfres
+REM If there's already a file named .sbfres, check for more old copies
+IF EXIST "%~dp0%bfresName%.sbfres" (
+	IF NOT EXIST "%~dp0%bfresName%.sbfres.old" (
+		GOTO oneOldSbfresAuto
+	)
+	SET /A renLoopNum=1
+	REM Loops through to search for old ones
+	:checkOldSbfresAuto
+	IF EXIST "%~dp0%bfresName%.sbfres.old%renLoopNum%" (
+		SET /A renLoopNum=renLoopNum+1
+		GOTO checkOldSbfresAuto
+	)
+	REM Renames starting from highest to lowest
+	:renLoopSbfresAuto
+	IF NOT "%renLoopNum%"=="1"	(
+		SET /A renLoopNew=renLoopNum-1
+		REN "%bfresName%.sbfres.old%renLoopNew%" "%bfresName%.sbfres.old%renLoopNum%"
+		SET /A renLoopNum=renLoopNum-1
+		GOTO renLoopSbfresAuto
+	)
+	:oneOldSbfresAuto
+	REM Finally, rename old file to .old
+	REN "%bfresName%.sbfres" "%bfresName%.sbfres.old"
+)
+REM Runs file through the program
+"%~dp0yaz0enc.exe" "%bfresPath%"
+REM Renames to final format
 REN "%bfresName%.bfres.yaz0" "%bfresName%.sbfres"
-
 GOTO exit
 
 REM Runs a loop to encode/decode multiple files
@@ -129,16 +155,136 @@ FOR %%i IN ("!file_%loopNum%!") DO (
 	
 REM If first for bytes are Yaz0, delete old file, run Yaz0Dec, and rename
 IF "%encTest:~0,4%"=="Yaz0" (
-	IF EXIST "%~dp0\%fileName%.bfres" DEL "%fileName%.bfres"
-	"%~dp0\yaz0dec.exe" "!file_%loopNum%!"
-	REN "%fileName%.sbfres 0.rarc" "%fileName%.bfres"
-	
+	REM For sbfres files
+	IF "!file_%loopNum%:~-6%!"=="sbfres" (
+		REM If there's already a file named .bfres, check for more old copies
+		IF EXIST "%~dp0%fileName%.bfres" (
+			IF NOT EXIST "%~dp0%fileName%.bfres.old" (
+				GOTO oneOldBfres
+			)
+			SET /A renLoopNum=1
+			REM Loops through to search for old ones
+			:checkOldBfres
+			IF EXIST "%~dp0%fileName%.bfres.old%renLoopNum%" (
+				SET /A renLoopNum=renLoopNum+1
+				GOTO checkOldBfres
+			)
+			REM Renames starting from highest to lowest
+			:renLoopBfres
+			IF NOT "%renLoopNum%"=="1"	(
+				SET /A renLoopNew=renLoopNum-1
+				REN "%fileName%.bfres.old%renLoopNew%" "%fileName%.bfres.old%renLoopNum%"
+				SET /A renLoopNum=renLoopNum-1
+				GOTO renLoopBfres
+			)
+			:oneOldBfres
+			REM Finally, rename old file to .old
+			REN "%fileName%.bfres" "%fileName%.bfres.old"
+		)
+		REM Runs file through the program
+		"%~dp0yaz0dec.exe" "!file_%loopNum%!"
+		REM Renames to final format
+		REN "%fileName%.sbfres 0.rarc" "%fileName%.bfres"
+		GOTO exit
+	)
+	REM For sbitemico files
+	IF "!file_%loopNum%:~-9%!"=="sbitemico" (
+		REM If there's already a file named .sbitemico, check for more old copies
+		IF EXIST "%~dp0%fileName%.sbitemico.bfres" (
+			IF NOT EXIST "%~dp0%fileName%.sbitemico.bfres.old" (
+				GOTO oneOldSbitemicoBfres
+			)
+			SET /A renLoopNum=1
+			REM Loops through to search for old ones
+			:checkOldSbitemicoBfres
+			IF EXIST "%~dp0%fileName%.sbitemico.bfres.old%renLoopNum%" (
+				SET /A renLoopNum=renLoopNum+1
+				GOTO checkOldSbitemicoBfres
+			)
+			REM Renames starting from highest to lowest
+			:renLoopSbitemicoBfres
+			IF NOT "%renLoopNum%"=="1"	(
+				SET /A renLoopNew=renLoopNum-1
+				REN "%fileName%.sbitemico.bfres.old%renLoopNew%" "%fileName%.sbitemico.bfres.old%renLoopNum%"
+				SET /A renLoopNum=renLoopNum-1
+				GOTO renLoopSbitemicoBfres
+			)
+			:oneOldSbitemicoBfres
+			REM Finally, rename old file to .old
+			REN "%fileName%.sbitemico.bfres" "%fileName%.sbitemico.bfres.old"
+		)
+		REM Runs file through the program
+		"%~dp0yaz0dec.exe" "!file_%loopNum%!"
+		REM Renames to final format
+		REN "%fileName%.sbitemico 0.rarc" "%fileName%.sbitemico.bfres"
+		GOTO exit
+	)
 REM If first for bytes are FRES, delete old file, run Yaz0Enc, and rename
 ) ELSE IF "%encTest:~0,4%"=="FRES" (
-	IF EXIST "%~dp0\%fileName%.sbfres" DEL "%fileName%.sbfres"
-	"%~dp0\yaz0enc.exe" "!file_%loopNum%!"
-	REN "%fileName%.bfres.yaz0" "%fileName%.sbfres"
-
+	REM For bfres files
+	IF NOT "!file_%loopNum%:~-15%!"=="sbitemico.bfres" (
+		REM If there's already a file named .sbfres, check for more old copies
+		IF EXIST "%~dp0%fileName%.sbfres" (
+			IF NOT EXIST "%~dp0%fileName%.sbfres.old" (
+				GOTO oneOldSbfres
+			)
+			SET /A renLoopNum=1
+			REM Loops through to search for old ones
+			:checkOldSbfres
+			IF EXIST "%~dp0%fileName%.sbfres.old%renLoopNum%" (
+				SET /A renLoopNum=renLoopNum+1
+				GOTO checkOldSbfres
+			)
+			REM Renames starting from highest to lowest
+			:renLoopSbfres
+			IF NOT "%renLoopNum%"=="1"	(
+				SET /A renLoopNew=renLoopNum-1
+				REN "%fileName%.sbfres.old%renLoopNew%" "%fileName%.sbfres.old%renLoopNum%"
+				SET /A renLoopNum=renLoopNum-1
+				GOTO renLoopSbfres
+			)
+			:oneOldSbfres
+			REM Finally, rename old file to .old
+			REN "%fileName%.sbfres" "%fileName%.sbfres.old"
+		)
+		REM Runs file through the program
+		"%~dp0yaz0enc.exe" "!file_%loopNum%!"
+		REM Renames to final format
+		REN "%fileName%.bfres.yaz0" "%fileName%.sbfres"
+		GOTO exit
+	)
+	REM For sbitemico.bfres files
+	IF "!file_%loopNum%:~-15%!"=="sbitemico.bfres" (
+		REM If there's already a file named .sbitemico, check for more old copies
+		IF EXIST "%~dp0%fileName%" (
+			IF NOT EXIST "%~dp0%fileName%.old" (
+				GOTO oneOldSbitemico
+			)
+			SET /A renLoopNum=1
+			REM Loops through to search for old ones
+			:checkOldSbitemico
+			IF EXIST "%~dp0%fileName%.old%renLoopNum%" (
+				SET /A renLoopNum=renLoopNum+1
+				GOTO checkOldSbitemico
+			)
+			REM Renames starting from highest to lowest
+			:renLoopSbitemico
+			IF NOT "%renLoopNum%"=="1"	(
+				SET /A renLoopNew=renLoopNum-1
+				REN "%fileName%.old%renLoopNew%" "%fileName%.old%renLoopNum%"
+				SET /A renLoopNum=renLoopNum-1
+				GOTO renLoopSbitemico
+			)
+			:oneOldSbitemico
+			REM Finally, rename old file to .old
+			REN "%fileName%" "%fileName%.old"
+		)
+		REM Runs file through the program
+		"%~dp0yaz0enc.exe" "!file_%loopNum%!"
+		REM Renames to final format
+		REN "%fileName%.bfres.yaz0" "%fileName%"
+		GOTO exit
+	)
 )
 
 REM If it's gone through all the files, just exit. If not, go back to the start of the loop.
