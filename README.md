@@ -6,7 +6,7 @@ All these programs must be in the same directory as this tool to work properly.
 * [Yaz0Dec.exe](https://cdn.discordapp.com/attachments/163993370635665409/359538263733698583/Yaz0dec.rar)
 * [Yaz0Enc.exe](http://amnoid.de/gc/yaz0enc.zip)
 * [BFRES_Vertex.py](https://gamebanana.com/tools/6132)
-* [Optional: BOTW-AutoMips.py](https://github.com/CEObrainz/Botw-AutoMipping)
+* Optional - [BOTW-AutoMips.py](https://github.com/CEObrainz/Botw-AutoMipping)
 
 ## Usage
 Using the tool is as simple as draging and dropping files onto it.
