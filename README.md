@@ -18,4 +18,4 @@ Using the tool is as simple as draging and dropping files onto it.
 
 Backing up old files is now supported! 
 
-Always back up any importaint files, especially original files, in a safe place.
+Always back up any important files, especially original files, in a safe place.
