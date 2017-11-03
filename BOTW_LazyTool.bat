@@ -200,7 +200,7 @@ IF "%encTest:~0,4%"=="Yaz0" (
 		"%~dp0yaz0dec.exe" "!file_%loopNum%!"
 		REM Renames to final format
 		REN "%fileName%.sbfres 0.rarc" "%fileName%.bfres"
-		GOTO exit
+		GOTO nextFile
 	)
 	REM For sbitemico files
 	IF "!file_%loopNum%:~-9%!"=="sbitemico" (
@@ -232,7 +232,7 @@ IF "%encTest:~0,4%"=="Yaz0" (
 		"%~dp0yaz0dec.exe" "!file_%loopNum%!"
 		REM Renames to final format
 		REN "%fileName%.sbitemico 0.rarc" "%fileName%.sbitemico.bfres"
-		GOTO exit
+		GOTO nextFile
 	)
 REM If first for bytes are FRES, delete old file, run Yaz0Enc, and rename
 ) ELSE IF "%encTest:~0,4%"=="FRES" (
@@ -266,7 +266,7 @@ REM If first for bytes are FRES, delete old file, run Yaz0Enc, and rename
 		"%~dp0yaz0enc.exe" "!file_%loopNum%!"
 		REM Renames to final format
 		REN "%fileName%.bfres.yaz0" "%fileName%.sbfres"
-		GOTO exit
+		GOTO nextFile
 	)
 	REM For sbitemico.bfres files
 	IF "!file_%loopNum%:~-15%!"=="sbitemico.bfres" (
@@ -298,10 +298,10 @@ REM If first for bytes are FRES, delete old file, run Yaz0Enc, and rename
 		"%~dp0yaz0enc.exe" "!file_%loopNum%!"
 		REM Renames to final format
 		REN "%fileName%.bfres.yaz0" "%fileName%"
-		GOTO exit
+		GOTO nextFile
 	)
 )
-
+:nextFile
 REM If it's gone through all the files, just exit. If not, go back to the start of the loop.
 if %loopNum%==%fileCount% GOTO exit
 SET /A loopNum=loopNum+1
